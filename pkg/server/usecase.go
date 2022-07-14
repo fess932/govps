@@ -6,6 +6,7 @@ import (
 	"github.com/digitalocean/go-libvirt/socket/dialers"
 	"log"
 	"net"
+	"os"
 	"time"
 )
 
@@ -50,22 +51,26 @@ func (u *Usecase) Get() (Hypervisor, error) {
 	}, nil
 }
 
-func (u *Usecase) Create() {
+func (u *Usecase) Create() error {
+	dxml, err := os.ReadFile("./configs/dxml.xml")
+	if err != nil {
+		return fmt.Errorf("failed to read dxml: %w", err)
+	}
+
+	_, err = u.l.DomainCreateXML(string(dxml), 0)
+	if err != nil {
+		return fmt.Errorf("failed to create domain: %w", err)
+	}
+
+	return nil
+}
+
+func (u *Usecase) Delete() {
 	//if od, err := u.l.DomainLookupByName("demo2"); err != nil {
 	//	log.Printf("failed to lookup domain: %v", err)
 	//} else {
 	//	if err = u.l.DomainDestroy(od); err != nil {
 	//		log.Printf("cant destroy domain: %v", err)
 	//	}
-	//}
-
-	//rDom, err := l.DomainCreateXML(dxml, 0)
-	//if err != nil {
-	//	log.Fatalf("failed to create domain: %v", err)
-	//}
-	//fmt.Printf("%d\t%s\t%s\n", rDom.ID, rDom.Name, rDom.UUID)
-	//
-	//if err = l.Disconnect(); err != nil {
-	//	log.Fatalf("failed to disco	nnect from libvirt: %v", err)
 	//}
 }

@@ -22,9 +22,26 @@
                 <p>Версия libc <strong>{{ .LibcVersion }}</strong></p>
 
                 <h3>Виртуалки</h3>
-                {{ range .Domains }}
-                <div>{{ . }}</div>
-                {{ else }}<div>Пусто</div>{{ end }}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Имя</th>
+                            <th scope="col">ID</th>
+                            <th scope="col">UUID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    {{ range .Domains }}
+                    <tr>
+                        <td>{{ .Name }}</td>
+                        <td>{{ .ID }}</td>
+                        <td>{{ toString .UUID }}</td>
+                    </tr>
+                    {{ else }}<tr>Пусто</tr>{{ end }}
+
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

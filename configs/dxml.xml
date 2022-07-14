@@ -9,10 +9,10 @@
     <clock sync="localtime"/>
     <devices>
         <emulator>/usr/bin/qemu-system-x86_64</emulator>
-        <disk type='file' device='disk'>
-            <source file='/var/lib/libvirt/images/demo2.img'/>
-            <target dev='hda'/>
-        </disk>
+<!--        <disk type='file' device='disk'>-->
+<!--            <source file='/var/lib/libvirt/images/demo2.img'/>-->
+<!--            <target dev='hda'/>-->
+<!--        </disk>-->
         <interface type='network'>
             <source network='default'/>
             <mac address='24:42:53:21:52:45'/>

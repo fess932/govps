@@ -14,6 +14,7 @@ func main() {
 	srv := server.NewDelivery(server.NewUsecase("/var/run/libvirt/libvirt-sock"))
 
 	r.Get("/", srv.Home)
+	r.Get("/add", srv.Add)
 
 	log.Println("server started on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
