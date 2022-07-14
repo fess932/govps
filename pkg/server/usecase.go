@@ -65,12 +65,15 @@ func (u *Usecase) Create() error {
 	return nil
 }
 
-func (u *Usecase) Delete() {
-	//if od, err := u.l.DomainLookupByName("demo2"); err != nil {
-	//	log.Printf("failed to lookup domain: %v", err)
-	//} else {
-	//	if err = u.l.DomainDestroy(od); err != nil {
-	//		log.Printf("cant destroy domain: %v", err)
-	//	}
-	//}
+func (u *Usecase) Delete(id int32) error {
+	rDom, err := u.l.DomainLookupByID(id)
+	if err != nil {
+		return fmt.Errorf("failed to lookup domain: %w", err)
+	}
+
+	if err = u.l.DomainDestroy(rDom); err != nil {
+		return fmt.Errorf("failed to destroy domain: %w", err)
+	}
+
+	return nil
 }

@@ -2,10 +2,13 @@ package server
 
 import (
 	"encoding/hex"
+	"fmt"
 	"github.com/digitalocean/go-libvirt"
+	"github.com/go-chi/chi/v5"
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func HTTPError(w http.ResponseWriter, status int, err error) {
@@ -54,6 +57,21 @@ func (d *Delivery) Home(w http.ResponseWriter, r *http.Request) {
 
 func (d *Delivery) Add(w http.ResponseWriter, r *http.Request) {
 	if err := d.uc.Create(); err != nil {
+		HTTPError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	http.Redirect(w, r, "/", http.StatusFound)
+}
+
+func (d *Delivery) Delete(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		HTTPError(w, http.StatusBadRequest, fmt.Errorf("wrong id %v: %w", id, err))
+		return
+	}
+
+	if err = d.uc.Delete(int32(id)); err != nil {
 		HTTPError(w, http.StatusInternalServerError, err)
 		return
 	}

@@ -34,7 +34,10 @@
 
                     {{ range .Domains }}
                     <tr>
-                        <td>{{ .Name }}</td>
+                        <td>
+                            <a type="button" href="/delete/{{.ID}}" class="btn-close" aria-label="Close" ></a>
+                            {{ .Name }}
+                        </td>
                         <td>{{ .ID }}</td>
                         <td>{{ toString .UUID }}</td>
                     </tr>

@@ -15,6 +15,7 @@ func main() {
 
 	r.Get("/", srv.Home)
 	r.Get("/add", srv.Add)
+	r.Get("/delete/{id}", srv.Delete)
 
 	log.Println("server started on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
