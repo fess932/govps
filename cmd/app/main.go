@@ -13,6 +13,9 @@ func main() {
 	r := chi.NewRouter()
 	srv := server.NewDelivery(server.NewUsecase("/var/run/libvirt/libvirt-sock"))
 
+	fsrv := http.FileServer(http.Dir("./web/"))
+	r.Handle("/static/*", http.StripPrefix("/static/", fsrv))
+
 	r.Get("/", srv.Home)
 	r.Get("/add", srv.Add)
 	r.Get("/delete/{id}", srv.Delete)

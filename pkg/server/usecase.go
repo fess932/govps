@@ -30,13 +30,28 @@ type Usecase struct {
 
 type Hypervisor struct {
 	LibcVersion uint64
-	Domains     []libvirt.Domain
+	Mem         uint64
+	MaxVcpus    int32
+	Cpus        int32
+	Mhz         int32
+	Nodes       int32
+	Sockets     int32
+	Cores       int32
+	Threads     int32
+
+	Model   [32]int8
+	Domains []libvirt.Domain
 }
 
 func (u *Usecase) Get() (Hypervisor, error) {
 	v, err := u.l.ConnectGetLibVersion()
 	if err != nil {
 		return Hypervisor{}, fmt.Errorf("failed to get libvirt version: %v", err)
+	}
+
+	model, mem, cups, mhz, nodes, sockets, cores, threads, err := u.l.NodeGetInfo()
+	if err != nil {
+		return Hypervisor{}, fmt.Errorf("failed to get node info: %v", err)
 	}
 
 	flags := libvirt.ConnectListDomainsActive | libvirt.ConnectListDomainsInactive
@@ -46,6 +61,15 @@ func (u *Usecase) Get() (Hypervisor, error) {
 	}
 
 	return Hypervisor{
+		Model:   model,
+		Mem:     mem,
+		Cpus:    cups,
+		Mhz:     mhz,
+		Nodes:   nodes,
+		Sockets: sockets,
+		Cores:   cores,
+		Threads: threads,
+
 		LibcVersion: v,
 		Domains:     domains,
 	}, nil

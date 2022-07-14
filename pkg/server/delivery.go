@@ -28,12 +28,19 @@ func (d *Delivery) Home(w http.ResponseWriter, r *http.Request) {
 	t := template.New("home.html").
 		Funcs(template.FuncMap{
 			"toString": func(v interface{}) string {
-				uuid, ok := v.(libvirt.UUID)
-				if !ok {
-					return "unknown type"
+				switch val := v.(type) {
+				case libvirt.UUID:
+					return hex.EncodeToString(val[:])
+				case [32]int8:
+					return fmt.Sprintf("%v", val)
+				case string:
+					return val
+				default:
+					return fmt.Sprintf("%v", v)
 				}
-
-				return hex.EncodeToString(uuid[:])
+			},
+			"memoryToString": func(v uint64) string {
+				return fmt.Sprintf("%v МБ", v/1024)
 			},
 		})
 

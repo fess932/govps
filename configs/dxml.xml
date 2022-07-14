@@ -17,6 +17,6 @@
             <source network='default'/>
             <mac address='24:42:53:21:52:45'/>
         </interface>
-        <graphics type='vnc' port='-1' keymap='de'/>
+        <graphics type='vnc' websocket="5601" autoport="yes"/>
     </devices>
 </domain>
