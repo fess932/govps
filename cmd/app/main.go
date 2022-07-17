@@ -17,8 +17,12 @@ func main() {
 	r.Handle("/static/*", http.StripPrefix("/static/", fsrv))
 
 	r.Get("/", srv.Home)
-	r.Get("/add", srv.Add)
-	r.Get("/delete/{id}", srv.Delete)
+
+	r.Get("/vm/{id}", srv.VMInfo)
+	r.Delete("/vm/{id}", srv.Delete)
+
+	r.Get("/add", srv.AddVMPage)
+	r.Post("/add", srv.Add)
 
 	log.Println("server started on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))

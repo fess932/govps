@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"github.com/digitalocean/go-libvirt"
 	"github.com/digitalocean/go-libvirt/socket/dialers"
+	"govps/pkg/configurator"
+	"libvirt.org/go/libvirtxml"
 	"log"
 	"net"
-	"os"
 	"time"
 )
 
@@ -75,29 +76,105 @@ func (u *Usecase) Get() (Hypervisor, error) {
 	}, nil
 }
 
+// создание диска
+// создание виртуалки
+// Saga ?
+
+var wsport = 39000
+
 func (u *Usecase) Create() error {
-	dxml, err := os.ReadFile("./configs/dxml.xml")
+
+	//disk, err := configurator.DiskXML()
+	//if err != nil {
+	//	return fmt.Errorf("failed to create disk: %w", err)
+	//}
+	//
+
+	dxml, err := configurator.VMXml(wsport)
 	if err != nil {
-		return fmt.Errorf("failed to read dxml: %w", err)
+		return fmt.Errorf("failed to create domain: %w", err)
 	}
+	//
+	//u.l.
+	//
+	//	//u.l.DomainDefineXML(domXml)
+
+	//dxml, err := os.ReadFile("./configs/dxml.xml")
+	//if err != nil {
+	//	return fmt.Errorf("failed to read dxml: %w", err)
+	//}
 
 	_, err = u.l.DomainCreateXML(string(dxml), 0)
 	if err != nil {
 		return fmt.Errorf("failed to create domain: %w", err)
 	}
 
+	wsport++
+
 	return nil
 }
 
-func (u *Usecase) Delete(id int32) error {
-	rDom, err := u.l.DomainLookupByID(id)
+func (u *Usecase) Delete(uuid libvirt.UUID) error {
+
+	rDom, err := u.l.DomainLookupByUUID(uuid)
+
 	if err != nil {
 		return fmt.Errorf("failed to lookup domain: %w", err)
 	}
 
 	if err = u.l.DomainDestroy(rDom); err != nil {
 		return fmt.Errorf("failed to destroy domain: %w", err)
+	} // stop
+
+	if err = u.l.DomainUndefine(rDom); err != nil {
+		log.Printf("failed to undefine domain: %v", err)
 	}
 
 	return nil
+}
+
+type VMInfo struct {
+	WSVNCPort int
+
+	State       uint8
+	Mem, MaxMem uint64
+	VCpu        uint16
+	CpuTime     uint64
+
+	RawXML string
+}
+
+func (u *Usecase) GetVMInfo(uuid libvirt.UUID) (VMInfo, error) {
+	rDom, err := u.l.DomainLookupByUUID(uuid)
+	if err != nil {
+		return VMInfo{}, fmt.Errorf("failed to lookup domain: %w", err)
+	}
+
+	a, maxMem, mem, vCpu, cpuTime, err := u.l.DomainGetInfo(rDom)
+	if err != nil {
+		return VMInfo{}, fmt.Errorf("failed to get domain info: %w", err)
+	}
+
+	rXml, err := u.l.DomainGetXMLDesc(rDom, 1)
+	if err != nil {
+		return VMInfo{}, fmt.Errorf("failed to get domain xml: %w", err)
+	}
+
+	xmlDomain := libvirtxml.Domain{}
+	if err = xmlDomain.Unmarshal(rXml); err != nil {
+		return VMInfo{}, fmt.Errorf("failed to unmarshal domain xml: %w", err)
+	}
+
+	wport := 0
+	for _, v := range xmlDomain.Devices.Graphics {
+		if v.VNC != nil {
+			wport = v.VNC.WebSocket
+		}
+	}
+
+	return VMInfo{
+		wport,
+		a, mem, maxMem, vCpu, cpuTime,
+		rXml,
+	}, nil
 }

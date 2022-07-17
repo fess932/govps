@@ -1,0 +1,76 @@
+<domain type="kvm" id="3">
+  <name>6a434630-6063-4b9e-8d92-99354f29f6c2</name>
+  <uuid>6a434630-6063-4b9e-8d92-99354f29f6c2</uuid>
+  <title>Default kvm vm</title>
+  <description>Default kvm vm</description>
+  <memory unit="KiB">524288</memory>
+  <currentMemory unit="KiB">524288</currentMemory>
+  <vcpu placement="static">1</vcpu>
+  <resource>
+    <partition>/machine</partition>
+  </resource>
+  <os>
+    <type arch="x86_64" machine="pc-i440fx-jammy">hvm</type>
+    <boot dev="hd"></boot>
+  </os>
+  <cpu match="exact" mode="custom" check="full">
+    <model fallback="forbid">qemu64</model>
+    <feature policy="require" name="x2apic"></feature>
+    <feature policy="require" name="hypervisor"></feature>
+    <feature policy="require" name="lahf_lm"></feature>
+    <feature policy="disable" name="svm"></feature>
+  </cpu>
+  <clock offset="utc"></clock>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type="file" device="disk">
+      <driver name="qemu" type="raw"></driver>
+      <source file="/var/lib/libvirt/qemu/imgs/6a434630-6063-4b9e-8d92-99354f29f6c2.img" index="1"></source>
+      <backingStore></backingStore>
+      <target dev="hda" bus="ide"></target>
+      <alias name="ide0-0-0"></alias>
+      <address type="drive" controller="0" bus="0" target="0" unit="0"></address>
+    </disk>
+    <controller type="usb" index="0" model="piix3-uhci">
+      <alias name="usb"></alias>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x01" function="0x2"></address>
+    </controller>
+    <controller type="pci" index="0" model="pci-root">
+      <alias name="pci.0"></alias>
+    </controller>
+    <controller type="ide" index="0">
+      <alias name="ide"></alias>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x01" function="0x1"></address>
+    </controller>
+    <input type="mouse" bus="ps2">
+      <alias name="input0"></alias>
+    </input>
+    <input type="keyboard" bus="ps2">
+      <alias name="input1"></alias>
+    </input>
+    <graphics type="vnc" port="5900" autoport="yes" websocket="39000" listen="0.0.0.0">
+      <listen type="address" address="0.0.0.0"></listen>
+    </graphics>
+    <audio id="1" type="none"></audio>
+    <video>
+      <model type="cirrus" heads="1" vram="16384" primary="yes"></model>
+      <alias name="video0"></alias>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x02" function="0x0"></address>
+    </video>
+    <memballoon model="virtio">
+      <alias name="balloon0"></alias>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x03" function="0x0"></address>
+    </memballoon>
+  </devices>
+  <seclabel type="dynamic" model="apparmor" relabel="yes">
+    <label>libvirt-6a434630-6063-4b9e-8d92-99354f29f6c2</label>
+    <imagelabel>libvirt-6a434630-6063-4b9e-8d92-99354f29f6c2</imagelabel>
+  </seclabel>
+  <seclabel type="dynamic" model="dac" relabel="yes">
+    <label>+64055:+109</label>
+    <imagelabel>+64055:+109</imagelabel>
+  </seclabel>
+</domain>

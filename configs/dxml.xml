@@ -1,6 +1,6 @@
 <domain type='kvm'>
-    <name>demo2</name>
-    <uuid>4dea24b3-1d52-d8f3-2516-782e98a23fa0</uuid>
+    <name>demo3</name>
+    <uuid>4dea24b3-1d52-d8f3-2516-782e98a23fad</uuid>
     <memory>131072</memory>
     <vcpu>1</vcpu>
     <os>
@@ -13,10 +13,16 @@
 <!--            <source file='/var/lib/libvirt/images/demo2.img'/>-->
 <!--            <target dev='hda'/>-->
 <!--        </disk>-->
+
+        <disk type='file' device='disk'>
+            <source file='/var/lib/libvirt/qemu/imgs/ubuntu-kvm.img'/>
+            <target dev='hda'/>
+        </disk>
+
         <interface type='network'>
             <source network='default'/>
             <mac address='24:42:53:21:52:45'/>
         </interface>
-        <graphics type='vnc' websocket="5601" autoport="yes"/>
+        <graphics type='vnc' websocket="5602"/>
     </devices>
 </domain>

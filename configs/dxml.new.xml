@@ -1,0 +1,22 @@
+<domain type="kvm">
+  <name>demo3</name>
+  <uuid>4dea24b3-1d52-d8f3-2516-782e98a23fad</uuid>
+  <memory>131072</memory>
+  <vcpu>1</vcpu>
+  <os>
+    <type arch="x86_64">hvm</type>
+  </os>
+  <clock></clock>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type="file" device="disk">
+      <source file="/var/lib/libvirt/qemu/imgs/ubuntu-kvm.img"></source>
+      <target dev="hda"></target>
+    </disk>
+    <interface type="network">
+      <mac address="24:42:53:21:52:45"></mac>
+      <source network="default"></source>
+    </interface>
+    <graphics type="vnc" websocket="5602"></graphics>
+  </devices>
+</domain>
