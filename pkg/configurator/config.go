@@ -12,6 +12,7 @@ import (
 const emulator = "/usr/bin/qemu-system-x86_64"
 const qemuImages = "/var/lib/libvirt/qemu/imgs/"
 const ubuntu = qemuImages + "ubuntu.img"
+const cidata = qemuImages + "cidata/cidata.iso"
 
 func copyImage(uuid string) (string, error) {
 	uf, err := os.Open(ubuntu)
@@ -63,58 +64,47 @@ func VMXml(websocketPort int) (string, error) {
 			Emulator: emulator,
 			Disks: []libvirtxml.DomainDisk{
 				{
-					XMLName:  xml.Name{},
-					Device:   "",
-					RawIO:    "",
-					SGIO:     "",
-					Snapshot: "",
-					Model:    "",
 					Driver: &libvirtxml.DomainDiskDriver{
 						Name: "qemu",
 						Type: "qcow2",
 					},
-					Auth: nil,
 					Source: &libvirtxml.DomainDiskSource{
 						File: &libvirtxml.DomainDiskSourceFile{File: name},
 					},
-					BackingStore:  nil,
-					BackendDomain: nil,
-					Geometry:      nil,
-					BlockIO:       nil,
-					Mirror:        nil,
 					Target: &libvirtxml.DomainDiskTarget{
 						Dev: "hda",
 					},
-					IOTune:     nil,
-					ReadOnly:   nil,
-					Shareable:  nil,
-					Transient:  nil,
-					Serial:     "",
-					WWN:        "",
-					Vendor:     "",
-					Product:    "",
-					Encryption: nil,
-					Boot:       nil,
-					ACPI:       nil,
-					Alias:      nil,
-					Address:    nil,
+				},
+				{
+					Device: "cdrom",
+					Driver: &libvirtxml.DomainDiskDriver{Type: "raw"},
+					Source: &libvirtxml.DomainDiskSource{
+
+						File: &libvirtxml.DomainDiskSourceFile{File: cidata},
+					},
+					Target: &libvirtxml.DomainDiskTarget{
+						Dev: "hdc",
+					},
+					ReadOnly: &libvirtxml.DomainDiskReadOnly{},
 				},
 			},
-
 			Graphics: []libvirtxml.DomainGraphic{
 				{
 					XMLName: xml.Name{},
 					VNC: &libvirtxml.DomainGraphicVNC{
-						Socket:        "",
-						Port:          websocketPort,
-						AutoPort:      "yes",
-						WebSocket:     websocketPort,
-						SharePolicy:   "",
-						Passwd:        "",
-						PasswdValidTo: "",
-						Connected:     "",
-						PowerControl:  "",
-						Listen:        "0.0.0.0",
+						Port:      websocketPort,
+						AutoPort:  "yes",
+						WebSocket: websocketPort,
+						Listen:    "0.0.0.0",
+					},
+				},
+			},
+			Interfaces: []libvirtxml.DomainInterface{
+				{
+					Source: &libvirtxml.DomainInterfaceSource{
+						Network: &libvirtxml.DomainInterfaceSourceNetwork{
+							Network: "default",
+						},
 					},
 				},
 			},
